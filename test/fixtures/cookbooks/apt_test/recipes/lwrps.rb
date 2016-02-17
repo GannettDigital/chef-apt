@@ -2,7 +2,7 @@
 # Cookbook Name:: apt_test
 # Recipe:: lwrps
 #
-# Copyright 2012, Opscode, Inc.
+# Copyright 2012, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,13 +20,30 @@
 include_recipe 'apt'
 
 # Apt Repository
-apt_repository 'opscode' do
-  uri 'http://apt.opscode.com'
+apt_repository 'juju' do
+  uri '"http://ppa.launchpad.net/juju/stable/ubuntu"'
   components ['main']
-  distribution "#{node['lsb']['codename']}-0.10"
-  key '2940ABA983EF826A'
-  keyserver 'pgpkeys.mit.edu'
+  distribution 'trusty'
+  key 'C8068B11'
+  keyserver 'keyserver.ubuntu.com'
   action :add
+end
+
+# Apt Repository
+apt_repository 'nodejs' do
+  uri 'http://ppa.launchpad.net/chris-lea/node.js/ubuntu'
+  components ['main']
+  distribution 'trusty'
+  key 'C7917B12'
+  keyserver 'hkp://keyserver.ubuntu.com:80'
+  action :add
+end
+
+# PPA Repository
+apt_repository 'rust' do
+  uri 'ppa:hansjorg/rust'
+  distribution node['lsb']['codename']
+  not_if { node['platform'] == 'debian' }
 end
 
 # Apt Repository with arch
@@ -48,6 +65,17 @@ apt_repository 'nginx' do
   deb_src true
 end
 
+# Apt repository that suppresses output for sensitive resources.
+apt_repository 'haproxy' do
+  uri 'http://ppa.launchpad.net/vbernat/haproxy-1.5/ubuntu'
+  distribution node['lsb']['codename']
+  components ['main']
+  keyserver 'keyserver.ubuntu.com'
+  key '1C61B9CD'
+  sensitive true
+  action :add
+end
+
 package 'nginx-debug' do
   action :upgrade
 end
@@ -58,9 +86,36 @@ apt_preference 'chef' do
   pin_priority '700'
 end
 
+# Preference file renaming
+file '/etc/apt/preferences.d/wget' do
+  action :touch
+end
+
+apt_preference 'wget' do
+  pin 'version 1.13.4-3'
+end
+
 # COOK-2338
 apt_preference 'dotdeb' do
   glob '*'
   pin 'origin packages.dotdeb.org '
   pin_priority '700'
+end
+
+# rename preferences with wildcards
+file '/etc/apt/preferences.d/*.pref' do
+  action :touch
+end
+
+apt_preference '*' do
+  pin 'origin nginx.org'
+end
+
+# Preference file removal
+file '/etc/apt/preferences.d/camel.pref' do
+  action :touch
+end
+
+apt_preference 'camel' do
+  action :remove
 end

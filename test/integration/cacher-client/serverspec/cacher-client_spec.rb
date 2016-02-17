@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: apt_test
-# Recipe:: unattended-upgrades
+# Recipe:: cacher-client_test
 #
-# Copyright 2014, Opscode, Inc.
+# Copyright 2013, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,4 +17,10 @@
 # limitations under the License.
 #
 
-include_recipe 'apt::unattended-upgrades'
+require_relative './spec_helper'
+
+describe 'apt_test::cacher-client' do
+  it 'does not create 01proxy' do
+    expect(file('/etc/apt/apt.conf.d/01proxy')).to_not exist
+  end
+end

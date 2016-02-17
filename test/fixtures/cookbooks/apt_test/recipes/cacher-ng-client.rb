@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: apt_test
-# Recipe:: cacher-client_test
+# Recipe:: cacher-ng-client
 #
-# Copyright 2013, Opscode, Inc.
+# Copyright 2013, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +17,8 @@
 # limitations under the License.
 #
 
-require File.expand_path('../support/helpers', __FILE__)
+include_recipe 'apt::cacher-ng'
+include_recipe 'apt::cacher-client'
 
-describe 'apt_test::cacher-client' do
-  include Helpers::AptTest
-
-  it 'does not create 01proxy' do
-    file('/etc/apt/apt.conf.d/01proxy').wont_exist
-  end
-
-end
+# install a small, innocuous application to verify this works
+package 'colordiff'

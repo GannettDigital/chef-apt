@@ -2,7 +2,7 @@
 # Cookbook Name:: apt_test
 # Recipe:: default
 #
-# Copyright 2012, Opscode, Inc.
+# Copyright 2012, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +17,10 @@
 # limitations under the License.
 #
 
-# helpers
-module Helpers
-  # include apt related methods
-  module AptTest
-    require 'chef/mixin/shell_out'
-    include Chef::Mixin::ShellOut
-    include MiniTest::Chef::Assertions
-    include MiniTest::Chef::Context
-    include MiniTest::Chef::Resources
+require_relative './spec_helper'
+
+describe 'apt_test::default' do
+  it 'runs the cacher service' do
+    expect(service('apt-cacher-ng')).to be_running
   end
 end
